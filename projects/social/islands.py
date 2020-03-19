@@ -52,7 +52,7 @@ def dft(start_row, start_col, matrix, visited):
             # Push all it's neighbors onto the stack
             for neighbor in get_neighbors(row, col, matrix):
                 s.push(neighbor)
-    # Return an updated visited matrix with all connnected components marked as visited
+    # Return an updated visited matrix with all connected components marked as visited
     return visited
 ​
 ​
