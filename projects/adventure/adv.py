@@ -1,6 +1,7 @@
 from room import Room
 from player import Player
 from world import World
+from util import Stack, Queue
 
 import random
 from ast import literal_eval
@@ -27,9 +28,61 @@ player = Player(world.starting_room)
 
 # Fill this out with directions to walk
 # traversal_path = ['n', 'n']
+
 traversal_path = []
+visited = {}
 
+def opposites(direction):
+    if direction == "n":
+        return "s"
+    if direction == "s":
+        return "n"
+    if direction == "e":
+        return "w"
+    if direction == "w":
+        return "e"
 
+def move(direction):
+    player.travel(direction)
+    traversal_path.append(direction)
+
+def add_visited(current_room_id, exits):
+    visited[current_room_id] = {}
+    for e in exits:
+        visited[current_room_id][e] = None        
+
+#dft
+def maze_traversal(current_room):
+    current_room = player.current_room.id
+    current_exits = player.current_room.get_exits()
+    prev_room = None
+    s = Stack()
+
+    s.push([None, current_room, prev_room, current_exits])
+    while len(visited) <= 499:
+        current_node = s.pop()
+        direction = current_node[0]
+        current_room = current_node[1]
+        prev_room = current_node[2]
+        c_exits = current_node[3]
+
+        if current_room not in visited:
+            add_visited(current_room, c_exits)
+        if direction is not None:
+            visited[current_room][opposites(direction)] = prev_room
+        if prev_room is not None:
+            visited[prev_room][direction] = current_room
+        for k in visited[current_room].keys():
+            if visited[current_room][k] is None:
+                s.push(current_node)
+                prev = player.current_room.id                
+                move(k)
+                s.push([k, player.current_room.id, prev, player.current_room.get_exits()])
+                break
+        if current_room == player.current_room.id:
+            move(opposites(direction))
+
+maze_traversal(player.current_room.id)        
 
 # TRAVERSAL TEST
 visited_rooms = set()
